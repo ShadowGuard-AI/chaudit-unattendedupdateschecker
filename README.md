@@ -1,3 +1,5 @@
+![Banner](banner.png)
+
 # chaudit-UnattendedUpdatesChecker
 A simple script to check if unattended upgrades are enabled and configured correctly on Linux systems, reporting on the status and any misconfigurations. Uses apt and dpkg libraries. - Focused on Audits configuration files (YAML, JSON) against predefined security best practices and benchmarks.  Checks for weak passwords, insecure permissions, and other common misconfigurations. Can be extended with custom rule sets.
 
