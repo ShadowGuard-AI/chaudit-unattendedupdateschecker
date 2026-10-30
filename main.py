@@ -137,9 +137,22 @@ def main():
 
     checker = UnattendedUpdatesChecker()
 
+    # The two modes are independent, but the audit needs both of its
+    # files. Asking for only one of them, or for nothing at all, used to
+    # fall through every branch and exit 0 having checked nothing.
+    if bool(args.config_file) != bool(args.schema_file):
+        parser.error("--config-file and --schema-file must be given together")
+    if not args.check_upgrades and not args.config_file:
+        parser.error("nothing to do: pass --check-upgrades, or --config-file with --schema-file")
+
+    upgrades_failed = False
     if args.check_upgrades:
         enabled, status = checker.check_unattended_upgrades()
         print(status)
+        # The status line is the report; the exit code is what a calling
+        # script can act on. A disabled state is a finding, recorded here
+        # and applied after the audit below has also had its run.
+        upgrades_failed = not enabled
 
     if args.config_file and args.schema_file:
         if not os.path.exists(args.config_file):
@@ -155,7 +168,8 @@ def main():
             print("Configuration file is invalid.")
             sys.exit(1)
 
+    if upgrades_failed:
+        sys.exit(1)
+
 if __name__ == "__main__":
-    # Example usage in offensive context: Checking for potentially vulnerable configuration
-    # by comparing the running configuration against a known vulnerable schema.
     main()
