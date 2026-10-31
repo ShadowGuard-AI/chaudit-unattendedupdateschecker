@@ -1,7 +1,7 @@
 ![Banner](banner.png)
 
 # chaudit-UnattendedUpdatesChecker
-A simple script to check if unattended upgrades are enabled and configured correctly on Linux systems, reporting on the status and any misconfigurations. Uses apt and dpkg libraries. - Focused on Audits configuration files (YAML, JSON) against predefined security best practices and benchmarks.  Checks for weak passwords, insecure permissions, and other common misconfigurations. Can be extended with custom rule sets.
+A simple script to check if unattended upgrades are enabled and configured correctly on Debian and Ubuntu systems, reporting on the status and any misconfigurations. It runs one dpkg -s check for the unattended-upgrades package and reads the two apt configuration files /etc/apt/apt.conf.d/50unattended-upgrades and /etc/apt/apt.conf.d/20auto-upgrades. It can also validate a YAML or JSON configuration file against a JSON schema supplied by the user. No predefined schema or rule set ships with this tool.
 
 ## Install
 `git clone https://github.com/ShadowStrikeHQ/chaudit-unattendedupdateschecker`

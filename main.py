@@ -14,8 +14,13 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 
 class UnattendedUpdatesChecker:
     """
-    Checks if unattended upgrades are enabled and configured correctly on Linux systems.
-    Also audits configuration files (YAML, JSON) against predefined security best practices.
+    Checks if unattended upgrades are enabled and configured correctly on
+    Debian and Ubuntu systems. It runs one dpkg -s check for the
+    unattended-upgrades package, reads the apt configuration files
+    /etc/apt/apt.conf.d/50unattended-upgrades and
+    /etc/apt/apt.conf.d/20auto-upgrades, and can validate a YAML or JSON
+    configuration file against a JSON schema supplied by the user. No
+    predefined schema or rule set ships with this class.
     """
 
     def __init__(self):
