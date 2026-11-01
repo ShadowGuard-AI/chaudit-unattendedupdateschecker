@@ -35,6 +35,12 @@ class UnattendedUpdatesChecker:
         """
         try:
             # Check if unattended-upgrades package is installed
+            # No check=True is passed, so the CalledProcessError
+            # handler below can never fire; the returncode test on the
+            # next line is the real gate. The status text dpkg prints
+            # is never read, so a package left in the removed but
+            # config files remain state, which dpkg reports with a
+            # zero code, counts as installed here.
             result = subprocess.run(['dpkg', '-s', 'unattended-upgrades'], capture_output=True, text=True)
             if result.returncode != 0:
                 return False, "Unattended upgrades package is not installed."
@@ -47,6 +53,11 @@ class UnattendedUpdatesChecker:
             with open(auto_upgrades_file, 'r') as f:
                 content = f.read()
 
+            # Presence of the string is all that is tested. A
+            # commented out Allowed-Origins block, or an empty one,
+            # contains the same text and passes, so this line proves
+            # the setting was written down, not that any origin is
+            # actually allowed.
             if 'Unattended-Upgrade::Allowed-Origins' not in content:
                 return False, "Unattended-Upgrade::Allowed-Origins not properly configured."
 
@@ -58,6 +69,11 @@ class UnattendedUpdatesChecker:
             with open(auto_updates_file, 'r') as f:
                 auto_updates_content = f.read()
 
+            # The two lines must match byte for byte, quotes, spacing,
+            # and semicolon included, and they must live in this exact
+            # file. Apt accepts several spellings of the same setting
+            # and reads every file in the directory, so a correctly
+            # configured host can fail here on formatting alone.
             if 'APT::Periodic::Update-Package-Lists "1";' not in auto_updates_content or 'APT::Periodic::Unattended-Upgrade "1";' not in auto_updates_content:
                 return False, "Automatic updates are not enabled in APT::Periodic."
 
