@@ -3,164 +3,90 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Chaudit Unattendedupdateschecker: what it is, how it runs, where it stops</title>
-<meta name="description" content="Chaudit Unattendedupdateschecker is one of my projects. The README in the repo is short, so this page sticks to what the files themselves show.">
+<title>chaudit-unattendedupdateschecker: The Compass Adjuster's Bench</title>
+<meta name="description" content="A simple script to check if unattended upgrades are enabled and configured correctly on Debian and Ubuntu systems.">
 <style>
-:root {
-  --bg: #e8dec4; --panel: #f4ecd6; --ink: #183636;
-  --mut: #ffffff;
-  --acc: #147a72; --acc2: #c65434;
-  --line: #f4ecd6;
-}
-* { box-sizing: border-box; }
-body { margin: 0; background: var(--bg); color: var(--ink);
-  font-family: 'Trebuchet MS', sans-serif; line-height: 1.55; }
-code, pre, .mono { font-family: 'Courier New', monospace; }
-a { color: var(--acc2); }
-.hero { padding: 3rem 6vw 1rem; }
-.hero img.banner { width: 100%; height: auto; border: 1px solid var(--line);
-  border-radius: 10px; }
-.logo { width: 92px; height: 92px; border-radius: 18px;
-  border: 1px solid var(--line); }
-h1 { font-size: 2.4rem; margin: 0.4em 0 0.1em; }
-h2 { border-bottom: 2px solid var(--acc); padding-bottom: 0.2em;
-  margin-top: 2em; }
-.lede { font-size: 1.15rem; max-width: 62ch; }
-main { padding: 0 6vw 3rem; max-width: 1180px; margin: 0 auto; }
-.grid { display: grid; gap: 1rem;
-  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); }
-.card { background: var(--panel); border: 1px solid var(--line);
-  border-radius: 12px; padding: 1rem 1.2rem; }
-.card.pop { animation: rise 0.7s ease both; }
-@keyframes rise { from { opacity: 0; transform: translateY(14px); }
-  to { opacity: 1; transform: none; } }
-pre.code { background: #101014; color: #e8e6df; padding: 1rem 1.2rem;
-  border-radius: 12px; overflow-x: auto; font-size: 0.86rem;
-  border-left: 5px solid var(--acc); }
-table { border-collapse: collapse; width: 100%; }
-td, th { border-bottom: 1px solid var(--line); padding: 0.45rem 0.6rem;
-  text-align: left; }
-.shots { display: grid; gap: 1rem;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
-.shots img { width: 100%; height: auto; border: 1px solid var(--line);
-  border-radius: 10px; background: #f4f1e8; }
-footer { padding: 2rem 6vw; border-top: 1px solid var(--line);
-  color: var(--mut); }
-.rail { display: flex; gap: 1.2rem; align-items: flex-start; }
-.rail nav { position: sticky; top: 1rem; min-width: 180px; }
-@media (max-width: 760px) { .rail { flex-direction: column; }
-  .rail nav { position: static; } }
-@media (prefers-reduced-motion: reduce) {
-  .card.pop { animation: none; } * { scroll-behavior: auto; } }
+@font-face{font-family:'Baloo Da 2';src:url('fonts/BalooDa2.ttf') format('truetype');}
+@font-face{font-family:'Barlow';src:url('fonts/Barlow.ttf') format('truetype');}
+:root{--sand:#e6d8b2;--paper:#f0e7c8;--iron:#181614;--kelp:#5a8250;--red:#c8281e}
+*{box-sizing:border-box}body{margin:0;background:var(--sand);color:var(--iron);font-family:'Barlow',sans-serif;line-height:1.65}
+h1,h2,h3{font-family:'Baloo Da 2',sans-serif;color:var(--iron)}
+.hero img.heroimg{width:100%;height:56vh;object-fit:cover;display:block}
+.hero .in{padding:1rem 6vw 2rem;max-width:1120px;margin:0 auto;width:100%}
+.hero h1{font-size:1.8rem;margin:.4rem 0}.logo{width:210px}
+main{padding:0 6vw 3rem;max-width:1120px;margin:0 auto}
+nav{display:flex;gap:.9rem;flex-wrap:wrap;margin:1.2rem 0}
+.btn{display:inline-block;text-decoration:none;color:var(--sand);font-family:'Baloo Da 2',sans-serif;padding:.65rem 1.3rem;background:#3a2e20;border:3px solid #8a7a5a;border-radius:50%}
+.btn:hover{filter:brightness(1.3)}.btn:active{transform:translateY(2px)}.btn:focus-visible{outline:3px solid var(--red);outline-offset:4px}
+.panel{background:var(--paper);border:3px solid var(--iron);padding:.4rem 1.8rem 1.5rem;margin:1.8rem 0;position:relative}
+.panel::before{content:'⛓';position:absolute;top:8px;left:10px;color:var(--kelp)}
+.panel h2{font-size:1.5rem;margin-left:1.4rem}
+pre{background:#e2d6af;padding:1rem;overflow-x:auto}.cmd{font-size:1.2rem;text-align:center;font-weight:700}
+a{color:#3d5a34}a::before{content:'◎ ';color:#7a6248}
+a:hover::before{color:var(--kelp)}.btn::before{content:none}
+.divider{height:12px;margin:2rem 0;background:radial-gradient(circle at 10px 6px,var(--iron) 4px,transparent 5px);background-size:30px 12px}
+table{border-collapse:collapse;width:100%}td,th{padding:.5rem .7rem;border-bottom:1px solid #c9b98e;text-align:left;vertical-align:top}
+td b{font-family:'Baloo Da 2',sans-serif}
+.callout{background:#eadfc0;border:2px solid var(--iron);padding:.2rem 1.4rem 1.1rem;margin:1.3rem 0;transform:rotate(-.4deg)}
+.callout h3{font-size:1.3rem}.fault{color:var(--red);font-weight:700}
+footer{padding:1rem 6vw 2.4rem;max-width:1120px;margin:0 auto}
 </style>
 </head>
-<body class="layout-cards">
-<!-- This page exists for chaudit-unattendedupdateschecker alone: the layout (index-cards),
-     the colors, and the type were picked for this project, not
-     shared with the other project pages. The code block below is
-     copied from the file it names, line for line. If it looks
-     plain, that is because the project is plain, and I would
-     rather the page match the project than dress it up. The one
-     thing I will not do here is oversell: what this project does
-     not do is stated on the page, not hidden from it. -->
+<body>
 <header class="hero">
-  <img class="logo" src="assets/logo.png" alt="Chaudit Unattendedupdateschecker logo">
-  <img class="banner" src="assets/banner.png" alt="">
-  <h1>Chaudit Unattendedupdateschecker</h1>
-  <p class="mono"><a href="https://github.com/ShadowGuard-AI/chaudit-unattendedupdateschecker">github.com/ShadowGuard-AI/chaudit-unattendedupdateschecker</a></p>
+<img class="heroimg" src="assets/intro-banner.png" alt="A compass adjuster's bench: an open binnacle compass in the foreground with its needle off its mark, corrector spheres and soft iron bars behind it, with no lettering anywhere">
+<div class="in">
+<img class="logo" src="assets/logo.png" alt="A binnacle compass straight on: an iron black pedestal, a brass hood, a sand and green card, and one signal red mark at the edge">
+<h1>chaudit-unattendedupdateschecker</h1>
+<p>A bench laid out left to right. Work is finished only when a needle agrees with the world, and the difference is written down.</p>
+<nav>
+<a class="btn" href="#check">Check Unattended Upgrades</a>
+<a class="btn" href="#params">Audit a File Against a Schema</a>
+<a class="btn" href="#check">Ask dpkg About the Package</a>
+<a class="btn" href="#params">Show Help</a>
+</nav>
+</div>
 </header>
-
 <main>
-  <section class="rail">
-    <nav aria-label="on this page">
-      <p class="mono"><a href="#run">Run it</a><br>
-      <a href="#files">The files</a><br>
-      <a href="#sheets">The sheets</a><br>
-      <a href="https://github.com/ShadowGuard-AI/chaudit-unattendedupdateschecker">The repo</a></p>
-    </nav>
-    <div>
-      <p class="lede">Chaudit Unattendedupdateschecker is one of my projects. The README in the repo is short, so this page sticks to what the files themselves show.</p>
-      <div class="grid">
-        <div class="card pop"><h3>What it is</h3>
-          <p>Chaudit Unattendedupdateschecker: 5 files, 196 counted
-          lines across Python 175, Markdown 19, Text 2. One job, done in the
-          open, in files you can read.</p></div>
-        <div class="card pop"><h3>The biggest piece</h3>
-          <p><code>main.py</code> carries the most
-          lines. If the project grows, that file is where the growth
-          lands first, for better or worse.</p></div>
-        <div class="card pop"><h3>The honest gap</h3>
-          <p>No test files yet. That is the honest gap, and the roadmap in the visuals folder says what the first one should cover.</p></div>
-      </div>
-      <section id="run">
-        <h2>Run it</h2>
-        <p>The repo README has the exact commands for this one. The
-        shape is the shape for most of my projects: clone it, read the
-        top file first so you know what will happen, then run it on
-        something you do not mind breaking.</p>
-        <p class="mono">$ git clone https://github.com/ShadowGuard-AI/chaudit-unattendedupdateschecker.git<br>$ cd chaudit-unattendedupdateschecker</p>
-      </section>
-      
-  <section aria-label="real code">
-    <h2>The code, as it sits in the repo</h2>
-    <p>From <code>main.py</code>, line 13 on. I did
-    not tidy it for the page. What you see is what the file has.</p>
-    <pre class="code"><code>logging.basicConfig(level=logging.INFO, format=&#x27;%(asctime)s - %(levelname)s - %(message)s&#x27;)
-
-class UnattendedUpdatesChecker:
-    &quot;&quot;&quot;
-    Checks if unattended upgrades are enabled and configured correctly on Linux systems.
-    Also audits configuration files (YAML, JSON) against predefined security best practices.
-    &quot;&quot;&quot;
-
-    def __init__(self):
-        &quot;&quot;&quot;Initialize the checker.&quot;&quot;&quot;
-        self.logger = logging.getLogger(__name__)
-
-    def check_unattended_upgrades(self):
-        &quot;&quot;&quot;
-        Checks the status of unattended upgrades on Debian/Ubuntu systems.
-        Returns:
-            tuple: (bool, str) - (enabled, status_message)
-        &quot;&quot;&quot;
-        try:
-            # Check if unattended-upgrades package is installed
-            result = subprocess.run([&#x27;dpkg&#x27;, &#x27;-s&#x27;, &#x27;unattended-upgrades&#x27;], capture_output=True, text=True)
-            if result.returncode != 0:</code></pre>
-  </section>
-      <section id="files">
-        <h2>The files that matter</h2>
-        <table><tr><th>File</th><th>Lines</th></tr>
-        <tr><td><code>main.py</code></td><td>175</td></tr>
-        <tr><td><code>README.md</code></td><td>19</td></tr>
-        <tr><td><code>requirements.txt</code></td><td>2</td></tr>
-        <tr><td><code>banner.png</code></td><td>0</td></tr>
-        <tr><td><code>logo.png</code></td><td>0</td></tr>
-        </table>
-        <p>Names doing the work: <span class="mono">UnattendedUpdatesChecker, setup_argparse, main, __init__, check_unattended_upgrades, audit_config_file</span>.</p>
-      </section>
-      <section id="sheets">
-        <h2>Drawn by hand</h2>
-        <p>I sketch my projects on notebook paper so I have to
-        understand them well enough to draw them. The full set,
-        with the counts and how they were counted, is the
-        <a href="https://github.com/ShadowGuard-AI/chaudit-unattendedupdateschecker/tree/main/chaudit-unattendedupdateschecker-Visuals">chaudit-unattendedupdateschecker-Visuals</a>
-        folder in the repo. Nothing is drawn over the binder holes.
-        That is a rule, not a style.</p>
-        <div class="shots">
-          <img src="assets/architecture.png" alt="Hand drawn architecture sheet for Chaudit Unattendedupdateschecker">
-          <img src="assets/flowchart.png" alt="Hand drawn flowchart sheet for Chaudit Unattendedupdateschecker">
-          <img src="assets/product-map.png" alt="Hand drawn product map sheet for Chaudit Unattendedupdateschecker">
-        </div>
-      </section>
-    </div>
-  </section>
+<section class="panel" id="check"><h2>Two Apt Files and One Package</h2>
+<p>chaudit-unattendedupdateschecker is a simple script to check if unattended upgrades are enabled and configured correctly on Debian and Ubuntu systems, reporting on the status and any misconfigurations.</p>
+<p>It runs one dpkg -s check for the unattended-upgrades package and reads the two apt configuration files /etc/apt/apt.conf.d/50unattended-upgrades and /etc/apt/apt.conf.d/20auto-upgrades.</p>
+<p>It can also validate a YAML or JSON configuration file against a JSON schema supplied by the user. No predefined schema or rule set ships with this tool.</p>
+<p><a href="https://github.com/ShadowGuard-AI/chaudit-unattendedupdateschecker">The repository on GitHub</a></p>
+</section>
+<div class="divider"></div>
+<section class="panel"><h2>Install Line as Published</h2>
+<pre>git clone https://github.com/ShadowStrikeHQ/chaudit-unattendedupdateschecker</pre>
+<div class="callout"><h3>Wrong Yard on the Sign</h3><p class="fault">Fault note: that organisation name is wrong for this repository, which lives under ShadowGuard-AI. The line above is quoted as published and is not silently corrected here. No further install steps exist in the source, and none are invented here.</p></div>
+</section>
+<div class="divider"></div>
+<section class="panel"><h2>Usage Line as Published</h2>
+<pre class="cmd">./chaudit-unattendedupdateschecker [params]</pre>
+<p>Correction from the code, not source text: no file of that name exists in the repository. The entry point in the code is main.py, run with python3.</p>
+</section>
+<div class="divider"></div>
+<section class="panel" id="params"><h2>Deviation Card of Parameters</h2>
+<table>
+<tr><td><b>-h</b></td><td>Shows the help message and exits.</td></tr>
+<tr><td><b>--check-upgrades</b></td><td>Checks unattended upgrades status.</td></tr>
+<tr><td><b>--config-file</b></td><td>Source wording: No description provided. Parser wording from main.py: the path to the configuration file to audit, in YAML or JSON.</td></tr>
+<tr><td><b>--schema-file</b></td><td>Path to the JSON schema file.</td></tr>
+</table>
+<div class="callout"><h3>Both Files or Neither</h3><p>Code note: the two file arguments must be given together. Giving neither or only one is an error. The two modes, the upgrades check and the file audit, are independent and may run in the same invocation.</p></div>
+</section>
+<div class="divider"></div>
+<section class="panel"><h2>How the Check Truly Reads</h2>
+<p>Taken from main.py and labelled as code truth. There is no verified behaviour section in the source, and that absence is stated plainly here instead of borrowing confidence from elsewhere.</p>
+<p>The package test trusts the return code of dpkg -s and never reads the status text it prints.</p>
+<p>The 50unattended-upgrades test asks only whether the string for Allowed-Origins is present in the file.</p>
+<p>The 20auto-upgrades test asks for two exact lines, character for character, APT::Periodic::Update-Package-Lists "1"; and APT::Periodic::Unattended-Upgrade "1";, in that one file.</p>
+</section>
+<div class="divider"></div>
+<section class="panel"><h2>Licence Line as Published</h2>
+<pre>Copyright (c) ShadowStrikeHQ</pre>
+<p class="fault">Fault exhibit, not a licence statement: that name is wrong for this repository, no licence is named in that section, and the LICENSE file in the repository is in fact an MIT text under a different copyright line. The reader is directed to the LICENSE file itself.</p>
+</section>
 </main>
-<footer>
-  <p>Chaudit Unattendedupdateschecker is one of my projects. This page was written
-  from the repo itself on 2026-10-30: the counts are the
-  repo's counts, the code is the repo's code, and the gaps are the
-  repo's gaps.</p>
-</footer>
+<footer><p>Theme: The Compass Adjuster's Bench. Type: Baloo Da 2 for headings, Barlow for reading, both SIL Open Font License 1.1. The lettering reference Belong Faith was reference only and is not embedded.</p></footer>
 </body>
 </html>
