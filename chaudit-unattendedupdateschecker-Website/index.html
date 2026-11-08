@@ -3,90 +3,101 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>chaudit-unattendedupdateschecker: The Compass Adjuster's Bench</title>
-<meta name="description" content="A simple script to check if unattended upgrades are enabled and configured correctly on Debian and Ubuntu systems.">
+<title>chaudit-unattendedupdateschecker: The Signal Box</title>
 <style>
-@font-face{font-family:'Baloo Da 2';src:url('fonts/BalooDa2.ttf') format('truetype');}
-@font-face{font-family:'Barlow';src:url('fonts/Barlow.ttf') format('truetype');}
-:root{--sand:#e6d8b2;--paper:#f0e7c8;--iron:#181614;--kelp:#5a8250;--red:#c8281e}
-*{box-sizing:border-box}body{margin:0;background:var(--sand);color:var(--iron);font-family:'Barlow',sans-serif;line-height:1.65}
-h1,h2,h3{font-family:'Baloo Da 2',sans-serif;color:var(--iron)}
-.hero img.heroimg{width:100%;height:56vh;object-fit:cover;display:block}
-.hero .in{padding:1rem 6vw 2rem;max-width:1120px;margin:0 auto;width:100%}
-.hero h1{font-size:1.8rem;margin:.4rem 0}.logo{width:210px}
-main{padding:0 6vw 3rem;max-width:1120px;margin:0 auto}
-nav{display:flex;gap:.9rem;flex-wrap:wrap;margin:1.2rem 0}
-.btn{display:inline-block;text-decoration:none;color:var(--sand);font-family:'Baloo Da 2',sans-serif;padding:.65rem 1.3rem;background:#3a2e20;border:3px solid #8a7a5a;border-radius:50%}
-.btn:hover{filter:brightness(1.3)}.btn:active{transform:translateY(2px)}.btn:focus-visible{outline:3px solid var(--red);outline-offset:4px}
-.panel{background:var(--paper);border:3px solid var(--iron);padding:.4rem 1.8rem 1.5rem;margin:1.8rem 0;position:relative}
-.panel::before{content:'⛓';position:absolute;top:8px;left:10px;color:var(--kelp)}
-.panel h2{font-size:1.5rem;margin-left:1.4rem}
-pre{background:#e2d6af;padding:1rem;overflow-x:auto}.cmd{font-size:1.2rem;text-align:center;font-weight:700}
-a{color:#3d5a34}a::before{content:'◎ ';color:#7a6248}
-a:hover::before{color:var(--kelp)}.btn::before{content:none}
-.divider{height:12px;margin:2rem 0;background:radial-gradient(circle at 10px 6px,var(--iron) 4px,transparent 5px);background-size:30px 12px}
-table{border-collapse:collapse;width:100%}td,th{padding:.5rem .7rem;border-bottom:1px solid #c9b98e;text-align:left;vertical-align:top}
-td b{font-family:'Baloo Da 2',sans-serif}
-.callout{background:#eadfc0;border:2px solid var(--iron);padding:.2rem 1.4rem 1.1rem;margin:1.3rem 0;transform:rotate(-.4deg)}
-.callout h3{font-size:1.3rem}.fault{color:var(--red);font-weight:700}
-footer{padding:1rem 6vw 2.4rem;max-width:1120px;margin:0 auto}
+@font-face { font-family: "Bevan"; src: url("fonts/Bevan-400.woff2") format("woff2"); font-weight: 400; }
+@font-face { font-family: "Carlito"; src: url("fonts/Carlito-400.woff2") format("woff2"); font-weight: 400; }
+@font-face { font-family: "Carlito"; src: url("fonts/Carlito-700.woff2") format("woff2"); font-weight: 700; }
+:root {
+  --dusk: #232a3a; --panel: #f4efe4; --ink: #2e2a24; --soft: #6f6a5c;
+  --red: #a52a21; --cream: #f7f1de; --brass: #8a6a1f; --brown: #5d4632; --line: #d8cfb8; --card: #fffdf6;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--panel); color: var(--ink); font-family: "Carlito", sans-serif; line-height: 1.55; font-size: 17.5px; }
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 20px 64px; }
+header.hero { text-align: center; padding: 52px 0 8px; }
+img.hero-logo { width: min(400px, 82vw); border-radius: 10px; box-shadow: 0 10px 34px rgba(46,42,36,.25); }
+h1, h2 { font-family: "Bevan", serif; line-height: 1.2; font-weight: 400; }
+h1 { font-size: clamp(25px, 4.4vw, 40px); margin: 26px 0 6px; }
+.tagline { color: var(--soft); font-size: 19px; margin: 0 auto; max-width: 680px; }
+.btns { margin: 22px 0 6px; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+a.btn { font-family: "Bevan", serif; text-decoration: none; padding: 11px 22px; border-radius: 999px; border: 2px solid var(--red); color: var(--red); background: transparent; }
+a.btn.solid { background: var(--red); border-color: var(--red); color: #fff; }
+figure { margin: 30px 0; }
+figure img { width: 100%; border-radius: 10px; display: block; box-shadow: 0 8px 28px rgba(46,42,36,.2); }
+figcaption { color: var(--soft); font-size: 15px; text-align: center; margin-top: 9px; }
+.facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin: 34px 0; }
+.fact { background: var(--card); border: 1px solid var(--line); border-top: 5px solid var(--red); border-radius: 8px; padding: 14px 16px; }
+.fact b { display: block; font-family: "Bevan", serif; font-size: 13.5px; letter-spacing: .04em; text-transform: uppercase; color: var(--brass); margin-bottom: 4px; }
+section { margin: 38px 0; }
+h2 { font-size: 25px; margin: 0 0 12px; border-bottom: 2px solid var(--line); padding-bottom: 7px; }
+code, pre { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; }
+pre { background: var(--dusk); color: #f3ecd9; padding: 15px 18px; border-radius: 8px; overflow-x: auto; font-size: 14.5px; }
+table { border-collapse: collapse; width: 100%; background: var(--card); }
+th, td { border: 1px solid var(--line); padding: 9px 12px; text-align: left; vertical-align: top; }
+th { font-family: "Bevan", serif; background: var(--cream); font-size: 15px; }
+.hold { background: #fbf0e8; border: 1px solid #e6c9b4; border-left: 6px solid var(--red); border-radius: 8px; padding: 16px 20px; }
+.hold h2 { border: none; padding: 0; }
+.hold ul { margin: 8px 0 4px; padding-left: 20px; }
+footer { margin-top: 52px; border-top: 2px solid var(--line); padding-top: 16px; color: var(--soft); font-size: 14.5px; text-align: center; }
 </style>
 </head>
 <body>
+<div class="wrap">
 <header class="hero">
-<img class="heroimg" src="assets/intro-banner.png" alt="A compass adjuster's bench: an open binnacle compass in the foreground with its needle off its mark, corrector spheres and soft iron bars behind it, with no lettering anywhere">
-<div class="in">
-<img class="logo" src="assets/logo.png" alt="A binnacle compass straight on: an iron black pedestal, a brass hood, a sand and green card, and one signal red mark at the edge">
-<h1>chaudit-unattendedupdateschecker</h1>
-<p>A bench laid out left to right. Work is finished only when a needle agrees with the world, and the difference is written down.</p>
-<nav>
-<a class="btn" href="#check">Check Unattended Upgrades</a>
-<a class="btn" href="#params">Audit a File Against a Schema</a>
-<a class="btn" href="#check">Ask dpkg About the Package</a>
-<a class="btn" href="#params">Show Help</a>
-</nav>
-</div>
+  <img class="hero-logo" src="assets/logo.png" alt="One signal lever straight on with a polished red shaft and a plain cream handle, standing in its slot in the lever frame against the dark box interior">
+  <h1>chaudit-unattendedupdateschecker</h1>
+  <p class="tagline">The Signal Box. A command line checker for Debian and Ubuntu systems that reports whether unattended upgrades are enabled and properly configured. It adjusts nothing: it stands over the register and confirms the entries stand written exactly as required, letter for letter, in the one book that counts.</p>
+  <div class="btns">
+    <a class="btn solid" href="https://github.com/ShadowGuard-AI/chaudit-unattendedupdateschecker">The repository</a>
+    <a class="btn" href="https://github.com/ShadowGuard-AI/chaudit-unattendedupdateschecker/blob/main/main.py">main.py</a>
+  </div>
 </header>
-<main>
-<section class="panel" id="check"><h2>Two Apt Files and One Package</h2>
-<p>chaudit-unattendedupdateschecker is a simple script to check if unattended upgrades are enabled and configured correctly on Debian and Ubuntu systems, reporting on the status and any misconfigurations.</p>
-<p>It runs one dpkg -s check for the unattended-upgrades package and reads the two apt configuration files /etc/apt/apt.conf.d/50unattended-upgrades and /etc/apt/apt.conf.d/20auto-upgrades.</p>
-<p>It can also validate a YAML or JSON configuration file against a JSON schema supplied by the user. No predefined schema or rule set ships with this tool.</p>
-<p><a href="https://github.com/ShadowGuard-AI/chaudit-unattendedupdateschecker">The repository on GitHub</a></p>
+
+<figure>
+  <img src="assets/intro-banner.png" alt="Two signal lever handles close up beside the open register book with its ruled pages blank, the brass lamp at the frame edge and the lever frame soft behind">
+  <figcaption>The frame is worked by hand; the register is checked line by line.</figcaption>
+</figure>
+
+<div class="facts">
+  <div class="fact"><b>Package test</b>One dpkg -s call for the unattended-upgrades package, and only its return code is read</div>
+  <div class="fact"><b>String tests</b>One text must appear in 50unattended-upgrades; two lines must match byte for byte in 20auto-upgrades</div>
+  <div class="fact"><b>Second mode</b>A user supplied configuration validated against a user supplied schema; no schema ships</div>
+  <div class="fact"><b>Exits</b>A disabled state prints its status and the run exits 1, after any requested audit has also run</div>
+</div>
+
+<section>
+  <h2>Usage</h2>
+  <pre>python3 main.py --check-upgrades
+python3 main.py --config-file CONFIG --schema-file SCHEMA</pre>
+  <p>The README's own usage line names a file that does not exist in the repository; the entry point is main.py, as the README's deviation card records. The two modes are independent, and either flag set, or both, can be run.</p>
+  <table>
+    <tr><th>Option</th><th>What it does</th></tr>
+    <tr><td><code>--check-upgrades</code></td><td>Check the unattended upgrades status on the host the tool runs on.</td></tr>
+    <tr><td><code>--config-file</code></td><td>The configuration file for the audit mode. It stands undescribed in the README's parameter list; the description here comes from the parser in main.py, as the README's deviation card notes. Must be given together with --schema-file.</td></tr>
+    <tr><td><code>--schema-file</code></td><td>Path to the JSON schema file for the audit mode. Must be given together with --config-file; asking for one of them, or for neither mode, is a parser error.</td></tr>
+    <tr><td><code>-h</code></td><td>Show help message and exit.</td></tr>
+  </table>
 </section>
-<div class="divider"></div>
-<section class="panel"><h2>Install Line as Published</h2>
-<pre>git clone https://github.com/ShadowStrikeHQ/chaudit-unattendedupdateschecker</pre>
-<div class="callout"><h3>Wrong Yard on the Sign</h3><p class="fault">Fault note: that organisation name is wrong for this repository, which lives under ShadowGuard-AI. The line above is quoted as published and is not silently corrected here. No further install steps exist in the source, and none are invented here.</p></div>
+
+<figure>
+  <img src="assets/banner.png" alt="A signal box interior at dusk: a row of red and cream signal levers along the frame under the tall windows, the signalman bent over the open register book on the desk by the brass lamp, the tracks and signals in the dusk below">
+  <figcaption>Dusk at the windows, the lamp lit over the book.</figcaption>
+</figure>
+
+<section class="hold">
+  <h2>Stated limits</h2>
+  <ul>
+    <li>The host check reads only the return code of its single dpkg -s call, never the status text, so a package left in the removed but config files remain state counts as installed.</li>
+    <li>The Allowed-Origins test is string presence: the text Unattended-Upgrade::Allowed-Origins merely has to appear in /etc/apt/apt.conf.d/50unattended-upgrades, and a commented out or empty block contains the same text and passes.</li>
+    <li>The two periodic lines, APT::Periodic::Update-Package-Lists "1"; and APT::Periodic::Unattended-Upgrade "1";, must match byte for byte, quotes, spacing, and semicolon included, in /etc/apt/apt.conf.d/20auto-upgrades exactly, although apt accepts several spellings of the same settings and reads every file in the directory. A correctly configured host can fail here on formatting alone.</li>
+    <li>No predefined schema or rule set ships with the tool for its second mode.</li>
+  </ul>
 </section>
-<div class="divider"></div>
-<section class="panel"><h2>Usage Line as Published</h2>
-<pre class="cmd">./chaudit-unattendedupdateschecker [params]</pre>
-<p>Correction from the code, not source text: no file of that name exists in the repository. The entry point in the code is main.py, run with python3.</p>
-</section>
-<div class="divider"></div>
-<section class="panel" id="params"><h2>Deviation Card of Parameters</h2>
-<table>
-<tr><td><b>-h</b></td><td>Shows the help message and exits.</td></tr>
-<tr><td><b>--check-upgrades</b></td><td>Checks unattended upgrades status.</td></tr>
-<tr><td><b>--config-file</b></td><td>Source wording: No description provided. Parser wording from main.py: the path to the configuration file to audit, in YAML or JSON.</td></tr>
-<tr><td><b>--schema-file</b></td><td>Path to the JSON schema file.</td></tr>
-</table>
-<div class="callout"><h3>Both Files or Neither</h3><p>Code note: the two file arguments must be given together. Giving neither or only one is an error. The two modes, the upgrades check and the file audit, are independent and may run in the same invocation.</p></div>
-</section>
-<div class="divider"></div>
-<section class="panel"><h2>How the Check Truly Reads</h2>
-<p>Taken from main.py and labelled as code truth. There is no verified behaviour section in the source, and that absence is stated plainly here instead of borrowing confidence from elsewhere.</p>
-<p>The package test trusts the return code of dpkg -s and never reads the status text it prints.</p>
-<p>The 50unattended-upgrades test asks only whether the string for Allowed-Origins is present in the file.</p>
-<p>The 20auto-upgrades test asks for two exact lines, character for character, APT::Periodic::Update-Package-Lists "1"; and APT::Periodic::Unattended-Upgrade "1";, in that one file.</p>
-</section>
-<div class="divider"></div>
-<section class="panel"><h2>Licence Line as Published</h2>
-<pre>Copyright (c) ShadowStrikeHQ</pre>
-<p class="fault">Fault exhibit, not a licence statement: that name is wrong for this repository, no licence is named in that section, and the LICENSE file in the repository is in fact an MIT text under a different copyright line. The reader is directed to the LICENSE file itself.</p>
-</section>
-</main>
-<footer><p>Theme: The Compass Adjuster's Bench. Type: Baloo Da 2 for headings, Barlow for reading, both SIL Open Font License 1.1. The lettering reference Belong Faith was reference only and is not embedded.</p></footer>
+
+<footer>
+  <p>The README of chaudit-unattendedupdateschecker closes with a copyright line naming ShadowStrikeHQ and no licence; the repository carries a separate LICENSE file headed MIT License. Site type is set in Bevan and Carlito, self-hosted under the SIL Open Font License.</p>
+</footer>
+</div>
 </body>
 </html>

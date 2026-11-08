@@ -1,12 +1,12 @@
-![A compass adjuster's bench: an open binnacle compass in the foreground with its needle off its mark, corrector spheres behind it, with no lettering anywhere](intro-banner.png)
+![Two signal lever handles close up beside the open register book with its ruled pages blank, the brass lamp at the frame edge and the lever frame soft behind](intro-banner.png)
 
 > Ship's log treatment noted first: a ruled log entry, Baloo Da 2 in iron black on sand.
 
 # chaudit-unattendedupdateschecker
 
-![A binnacle compass straight on: an iron black pedestal, a brass hood, a sand and green card, and one signal red mark at the edge](logo.png)
+![One signal lever straight on with a polished red shaft and a plain cream handle, standing in its slot in the lever frame against the dark box interior, the heading plate](logo.png)
 
-![A workshop bench with the title lettered on the job board above the bench](banner.png)
+![A signal box interior at dusk: a row of red and cream signal levers along the frame under the tall windows, the signalman bent over the open register book on the desk by the brass lamp, the tracks and signals in the dusk below](banner.png)
 
 ![A bench in three depths: window light shifting once, the compass needle hunting and settling nearer its mark, and one loose rope end swaying in a draught](scene.svg)
 
