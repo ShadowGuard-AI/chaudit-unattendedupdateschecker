@@ -11,7 +11,6 @@
 ![A bench in three depths: window light shifting once, the compass needle hunting and settling nearer its mark, and one loose rope end swaying in a draught](scene.svg)
 
 
-# chaudit-UnattendedUpdatesChecker
 A simple script to check if unattended upgrades are enabled and configured correctly on Debian and Ubuntu systems, reporting on the status and any misconfigurations. It runs one dpkg -s check for the unattended-upgrades package and reads the two apt configuration files /etc/apt/apt.conf.d/50unattended-upgrades and /etc/apt/apt.conf.d/20auto-upgrades. It can also validate a YAML or JSON configuration file against a JSON schema supplied by the user. No predefined schema or rule set ships with this tool.
 
 ## Install
